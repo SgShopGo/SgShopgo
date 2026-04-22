@@ -1,0 +1,177 @@
+import React, { useMemo, useState } from 'react'; import { motion } from 'framer-motion'; import { Card, CardContent } from '@/components/ui/card'; import { Button } from '@/components/ui/button'; import { Input } from '@/components/ui/input'; import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+// Single-file React landing + order form for GitHub/preview. // WhatsApp redirect format sends order details to 01172797426.
+
+const WHATSAPP = '601172797426';
+
+const topupProviders = [ 'Maxis (Hotlink)','Digi','Celcom','U Mobile','Tune Talk','XOX','Halo Telco','ONEXOX','redONE','BeONE','Unifi Mobile','YES Prepaid','NJOI','ToneWOW' ]; const amounts5to100 = Array.from({length:20},(_,i)=>(i+1)*5);
+
+const pinProducts = { 'Maxis PIN':[5,10,20,30,50,100], 'Digi PIN':[5,10,20,30,50,100], 'Celcom PIN':[5,10,20,30,50,100], 'U Mobile PIN':[5,10,20,30,50,100], 'XOX PIN':[5,10,20,30,50,100], 'Tune Talk PIN':[5,10,20,30,50,100], 'YES PIN':[10,20,30,50], 'NJOI PIN':[10,20,30], 'Grab Driver PIN':[10,30,50], 'Unifi Mobile PIN':[10,30,50], "Touch 'n Go PIN":[11,21,31,51,101,151,201], 'Merchantrade PIN':[5,10,30], 'redONE PIN':[10,20,30,50], 'UltraTone ID':[10,20,30,50], };
+
+const utilityBills = [ 'Maxis Fibre Bill','Astro Bill','Unifi Bill','Tenaga Nasional Bill','TM Bill','Syabas / Air Selangor Bill','SADA Bill','Indah Water Bill','SESCo Bill','NUR Power Bill','SESB Bill','SAINS Bill','Air Kelantan Bill','Air Johor Bill','SATU Bill','Air Perak Bill','AIRMELAKA BILL','SARAWAK WATER','AIRPERLISBILL' ];
+
+const phoneBills = [ 'MAXISBILL','HOTLINKFLEXBILL','UMOBILEBILL','DIGIBILL','DIGIBILL-ACCOUNT','CELCOMBILL','CELCOMFIBERBILL','CELCOMBILL-ACCOUNT','REDONEBILL','REDONEBILL-ACCOUNT','XOXBILL','YESBILL','TUNETALKBILL','UNIFIMOBILEBILL','UMOBILEBILL-ACCOUNT' ];
+
+const categories = [ 'Topup','PIN','Utility Bill','Phone Bill','Agent Topup','Cukai Tanah Kedah' ];
+
+function feeForPin(product, amount){ if(["Touch 'n Go PIN",'Grab Driver PIN','Merchantrade PIN','NJOI PIN'].includes(product)){ if(amount <=10) return 1; if(amount <=30) return 2; if(amount <=50) return 3; if(amount <=100) return 4; return 5; } return 0; }
+
+function LogoGrid({items}){ return (
+
+ <div className='grid md:grid-cols-4 grid-cols-2 gap-3 mt-4'>
+ {items.map(item=>(
+  <Card key={item} className='rounded-2xl shadow-md'>
+   <CardContent className='p-5 text-center'>
+    <div className='text-3xl mb-2'>📱</div>
+    <div className='font-semibold text-sm'>{item}</div>
+    <div className='text-xs opacity-70 mt-1'>Produk</div>
+   </CardContent>
+  </Card>
+ ))}
+ </div>
+ )
+}export default function UXMobileStore(){ const [category,setCategory]=useState('Topup'); const [product,setProduct]=useState(''); const [amount,setAmount]=useState(''); const [phone,setPhone]=useState(''); const [account,setAccount]=useState(''); const [name,setName]=useState(''); const [agentType,setAgentType]=useState('Agent'); const [liveTx] = useState(()=> Math.floor(Math.random()*8000)+12000);
+
+const productOptions = useMemo(()=>{ if(category==='Topup') return topupProviders; if(category==='PIN') return Object.keys(pinProducts); if(category==='Utility Bill') return utilityBills; if(category==='Phone Bill') return phoneBills; return []; },[category]);
+
+const amountOptions = useMemo(()=>{ if(category==='Topup') return amounts5to100; if(category==='PIN' && product) return pinProducts[product]||[]; return []; },[category,product]);
+
+const submit=()=>{ let fee=0; if(category==='PIN') fee=feeForPin(product, Number(amount)); if(category==='Utility Bill' || category==='Phone Bill') fee=1; const total=(Number(amount||1)+fee);
+
+let text='ORDER BARU UX MOBILE%0A'; text += Kategori: ${category}%0A;
+
+if(category==='Agent Topup'){ text += Pakej: ${agentType}%0AHarga: RM1%0A; text += Nama: ${name}%0ANo Fon: ${phone}; } else if(category==='Cukai Tanah Kedah'){ text += No Hak Milik: ${account}%0AAmaun: RM${amount}; } else { text += Produk: ${product}%0A; if(phone) text += No Telefon: ${phone}%0A; if(account) text += No Akaun: ${account}%0A; text += Amaun: RM${amount}%0A; if(fee) text += Caj: RM${fee}%0A; text += Jumlah Bayar: RM${total}; } window.open(https://wa.me/${WHATSAPP}?text=${text},'_blank'); }
+
+return (
+
+ <div className='min-h-screen bg-slate-50 p-6'>
+   <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} className='max-w-6xl mx-auto'>   <Card className='rounded-[30px] shadow-xl mb-8'>
+    <CardContent className='p-8'>
+      <div className='flex flex-col md:flex-row justify-between gap-6 items-center'>
+       <div>
+        <h1 className='text-4xl font-bold'>UX Mobile</h1>
+        <p className='opacity-70 mt-2'>Topup • PIN • Bil • Agent Dealer • Cukai Tanah Kedah</p>
+        <div className='mt-4 text-sm bg-black text-white inline-block rounded-full px-4 py-2'>
+          Live Transaksi Hari Ini: RM {liveTx.toLocaleString()}
+        </div>
+       </div>
+       <div className='grid grid-cols-2 gap-3 text-sm'>
+        <div className='p-4 rounded-2xl bg-white shadow'>⚡ Caj bil RM1</div>
+        <div className='p-4 rounded-2xl bg-white shadow'>📲 Auto ke WhatsApp</div>
+        <div className='p-4 rounded-2xl bg-white shadow'>🔐 PIN tersedia</div>
+        <div className='p-4 rounded-2xl bg-white shadow'>🤝 Agent RM1</div>
+       </div>
+      </div>
+    </CardContent>
+   </Card>   <Card className='rounded-[30px] shadow-xl mb-8'>
+    <CardContent className='p-8'>
+      <h2 className='text-2xl font-bold mb-4'>Pilih Produk</h2>
+      <div className='grid md:grid-cols-2 gap-6'>
+       <div>
+        <label>Kategori</label>
+        <Select onValueChange={(v)=>{setCategory(v); setProduct(''); setAmount('')}} defaultValue='Topup'>
+         <SelectTrigger className='mt-2'><SelectValue/></SelectTrigger>
+         <SelectContent>
+         {categories.map(c=><SelectItem key={c} value={c}>{c}</SelectItem>)}
+         </SelectContent>
+        </Select>
+       </div>{['Topup','PIN','Utility Bill','Phone Bill'].includes(category) && (
+   <div>
+    <label>Produk</label>
+    <Select onValueChange={setProduct}>
+     <SelectTrigger className='mt-2'><SelectValue placeholder='Pilih produk'/></SelectTrigger>
+     <SelectContent>
+      {productOptions.map(p=><SelectItem key={p} value={p}>{p}</SelectItem>)}
+     </SelectContent>
+    </Select>
+   </div>
+   )}
+  </div>
+
+  {(category==='Topup' || category==='PIN') && product && (
+  <div className='mt-6'>
+    <label>Amaun</label>
+    <Select onValueChange={setAmount}>
+     <SelectTrigger className='mt-2'><SelectValue placeholder='Pilih amaun'/></SelectTrigger>
+     <SelectContent>
+      {amountOptions.map(a=><SelectItem key={a} value={String(a)}>RM {a}</SelectItem>)}
+     </SelectContent>
+    </Select>
+    {category==='PIN' && feeForPin(product, Number(amount||0))>0 && (
+     <p className='text-sm mt-2'>Caj servis automatik ikut amaun (RM1-RM5)</p>
+    )}
+  </div>
+  )}
+
+  {category==='Topup' && (
+  <div className='mt-6'>
+   <label>No Telefon</label>
+   <Input className='mt-2' value={phone} onChange={e=>setPhone(e.target.value)} placeholder='01XXXXXXXX'/>
+  </div>
+  )}
+
+  {category==='PIN' && (
+  <div className='mt-6'>
+   <label>No Telefon</label>
+   <Input className='mt-2' value={phone} onChange={e=>setPhone(e.target.value)} placeholder='No untuk rekod'/>
+  </div>
+  )}
+
+  {category==='Utility Bill' && (
+  <div className='grid md:grid-cols-2 gap-6 mt-6'>
+   <div>
+    <label>No Akaun</label>
+    <Input className='mt-2' value={account} onChange={e=>setAccount(e.target.value)} />
+   </div>
+   <div>
+    <label>Amaun Bayar</label>
+    <Input className='mt-2' value={amount} onChange={e=>setAmount(e.target.value)} placeholder='RM'/>
+   </div>
+  </div>
+  )}
+
+  {category==='Phone Bill' && (
+  <div className='grid md:grid-cols-3 gap-6 mt-6'>
+   <Input value={account} onChange={e=>setAccount(e.target.value)} placeholder='No Akaun'/>
+   <Input value={phone} onChange={e=>setPhone(e.target.value)} placeholder='No Telefon'/>
+   <Input value={amount} onChange={e=>setAmount(e.target.value)} placeholder='Amaun RM'/>
+  </div>
+  )}
+
+  {category==='Agent Topup' && (
+  <div className='grid md:grid-cols-3 gap-6 mt-6'>
+   <Select onValueChange={setAgentType} defaultValue='Agent'>
+    <SelectTrigger><SelectValue/></SelectTrigger>
+    <SelectContent>
+     <SelectItem value='Agent'>Agent</SelectItem>
+     <SelectItem value='Dealer'>Dealer</SelectItem>
+    </SelectContent>
+   </Select>
+   <Input value={name} onChange={e=>setName(e.target.value)} placeholder='Nama'/>
+   <Input value={phone} onChange={e=>setPhone(e.target.value)} placeholder='No Telefon'/>
+  </div>
+  )}
+
+  {category==='Cukai Tanah Kedah' && (
+  <div className='grid md:grid-cols-2 gap-6 mt-6'>
+   <Input value={account} onChange={e=>setAccount(e.target.value)} placeholder='No Hak Milik'/>
+   <Input value={amount} onChange={e=>setAmount(e.target.value)} placeholder='Amaun Bayaran'/>
+  </div>
+  )}
+
+  <Button onClick={submit} className='mt-8 rounded-2xl px-8 py-6 text-lg'>Bayar / Hantar ke WhatsApp</Button>
+</CardContent>
+
+   </Card>   <section className='mb-10'>
+    <h3 className='text-2xl font-bold'>Produk Topup</h3>
+    <LogoGrid items={topupProviders}/>
+   </section>   <section>
+    <h3 className='text-2xl font-bold'>Produk PIN</h3>
+    <LogoGrid items={Object.keys(pinProducts)}/>
+   </section>   <div className='text-center mt-12 opacity-70 text-sm'>
+    UX Mobile © Sistem order WhatsApp untuk GitHub Pages / Vercel deployment
+   </div></motion.div>
+
+ </div>
+ )
+}
